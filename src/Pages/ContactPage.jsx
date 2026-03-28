@@ -8,6 +8,8 @@ export default function ContactPage() {
         <p className="text-lg text-gray-700">Reach me at:</p>
 
         <p className="mt-4 text-xl font-semibold">stephenajao97@gmail.com</p>
+        <p className="mt-4 text-xl font-semibold">Stephen</p>
+
       </div>
       {/* <Footer /> */}
     </>

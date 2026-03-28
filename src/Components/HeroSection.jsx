@@ -26,8 +26,14 @@ export default function HeroSection() {
             </a>
 
             <a href="/Files/Stephen Ajao_Resume.pdf" download>
-              <button className="px-8 py-3 border border-cyan-600 text-cyan-600 rounded-lg hover:bg-cyan-50">
+              <button className="px-8 py-3 border border-cyan-900 text-cyan-700 rounded-lg hover:bg-cyan-300 translate-middle">
                 Download CV
+              </button>
+            </a>
+
+            <a href="/Files/Certifications.zip" download>
+              <button className="px-8 py-3 border border-cyan-900 text-cyan-700 rounded-lg hover:bg-cyan-300 translate-middle">
+                Certifications
               </button>
             </a>
           </div>
