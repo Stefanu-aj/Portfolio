@@ -27,6 +27,12 @@ export default function Navbar() {
         >
           Portfolio
         </Link>
+        {/* <Link
+          className="border-b-2 border-transparent hover:border-b-cyan-600 transition"
+          to="/contact"
+        >
+          Certification
+        </Link> */}
         <Link
           className="border-b-2 border-transparent hover:border-b-cyan-600 transition"
           to="/contact"
