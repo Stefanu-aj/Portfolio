@@ -19,6 +19,11 @@ export default function Portfolio() {
       link: "",
       image: "/Images/pagatts.png",
     },
+    {
+      title: "Weather App",
+      link: "https://weather-app-stefanu.vercel.app/",
+      image: "\\Images\\Weather app.png",
+    },
   ];
 
   return (
