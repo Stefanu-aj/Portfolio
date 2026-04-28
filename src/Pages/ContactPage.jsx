@@ -283,8 +283,7 @@ export default function ContactPage() {
           </motion.div>
         </SlideIn>
       </div>
-
-      <Footer />
+      
     </>
   );
 }
