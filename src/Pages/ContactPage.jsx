@@ -5,6 +5,7 @@ import { FaPhone, FaLinkedin, FaGithub, FaTwitter, FaInstagram, FaFacebook } fro
 import Footer from "../Components/Footer";
 import SlideIn from "../Components/SlideIn";
 
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -14,6 +15,8 @@ export default function ContactPage() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,8 +26,10 @@ export default function ContactPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     // Validate form data
     if (
       formData.name &&
@@ -32,9 +37,28 @@ export default function ContactPage() {
       formData.subject &&
       formData.message
     ) {
-      setSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      setTimeout(() => setSubmitted(false), 3000);
+      setLoading(true);
+      try {
+        const response = await fetch("http://localhost:5000/api/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+          setSubmitted(true);
+          setFormData({ name: "", email: "", subject: "", message: "" });
+          setTimeout(() => setSubmitted(false), 3000);
+        } else {
+          setError("Failed to send message. Please try again.");
+        }
+      } catch (err) {
+        setError("Error: Could not connect to server. Make sure backend is running.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -68,6 +92,17 @@ export default function ContactPage() {
                   className="mb-4 p-4 bg-green-100 text-green-700 rounded-lg"
                 >
                   ✓ Message sent successfully! I'll get back to you soon.
+                </motion.div>
+              )}
+
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg"
+                >
+                  ✗ {error}
                 </motion.div>
               )}
 
@@ -134,9 +169,10 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#0EA5A4] hover:bg-[#0B8E8D] text-white font-semibold py-3 rounded-lg transition"
+                  disabled={loading}
+                  className="w-full bg-[#0EA5A4] hover:bg-[#0B8E8D] text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Send Message
+                  {loading ? "Sending..." : "Send Message"}
                 </button>
               </form>
             </div>
