@@ -4,7 +4,7 @@ import SlideIn from "./SlideIn";
 export default function Portfolio() {
   const projects = [
     {
-      title: "Fullstack E-commerce Store",
+      title: "E-commerce Store",
       link: "https://fullstack-frontend-zeta-five.vercel.app/",
       image: "/Images/adeola store.png",
     },

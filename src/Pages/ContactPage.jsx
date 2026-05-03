@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import emailjs from "@emailjs/browser";
 import { motion } from "framer-motion";
 import { MdEmail, MdWhatsapp } from "react-icons/md";
 import { FaPhone, FaLinkedin, FaGithub, FaTwitter, FaInstagram, FaFacebook } from "react-icons/fa";
@@ -30,7 +31,6 @@ export default function ContactPage() {
     e.preventDefault();
     setError("");
 
-    // Validate form data
     if (
       formData.name &&
       formData.email &&
@@ -39,23 +39,33 @@ export default function ContactPage() {
     ) {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:5000/api/send-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
+        const emailData = {
+          from_name: formData.name,
+          reply_to: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        };
 
-        if (response.ok) {
-          setSubmitted(true);
-          setFormData({ name: "", email: "", subject: "", message: "" });
-          setTimeout(() => setSubmitted(false), 3000);
-        } else {
-          setError("Failed to send message. Please try again.");
+        const serviceID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+        const templateID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+        const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+        if (!serviceID || !templateID || !publicKey) {
+          throw new Error(
+            "EmailJS configuration is missing. Please add VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, and VITE_EMAILJS_PUBLIC_KEY to your .env file."
+          );
         }
+
+        await emailjs.send(serviceID, templateID, emailData, publicKey);
+
+        setSubmitted(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        setTimeout(() => setSubmitted(false), 3000);
       } catch (err) {
-        setError("Error: Could not connect to server. Make sure backend is running.");
+        console.error(err);
+        setError(
+          err.message || "Failed to send message. Please check your EmailJS settings and try again."
+        );
       } finally {
         setLoading(false);
       }
@@ -117,7 +127,7 @@ export default function ContactPage() {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Full name"
-                    className="w-full px-4 py-3 border border-[#E4E7EC] rounded-lg focus:outline-none focus:border-[#0EA5A4] transition"
+                    className="w-full px-4 py-3 border border-[#E4E7EC] rounded-lg focus:outline-none focus:border-cyan-600 transition"
                     required
                   />
                 </div>
@@ -132,7 +142,7 @@ export default function ContactPage() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Email"
-                    className="w-full px-4 py-3 border border-[#E4E7EC] rounded-lg focus:outline-none focus:border-[#0EA5A4] transition"
+                    className="w-full px-4 py-3 border border-[#E4E7EC] rounded-lg focus:outline-none focus:border-cyan-600 transition"
                     required
                   />
                 </div>
@@ -147,7 +157,7 @@ export default function ContactPage() {
                     value={formData.subject}
                     onChange={handleChange}
                     placeholder="Subject"
-                    className="w-full px-4 py-3 border border-[#E4E7EC] rounded-lg focus:outline-none focus:border-[#0EA5A4] transition"
+                    className="w-full px-4 py-3 border border-[#E4E7EC] rounded-lg focus:outline-none focus:border-cyan-600 transition"
                     required
                   />
                 </div>
@@ -162,7 +172,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     placeholder="Input your message..."
                     rows="5"
-                    className="w-full px-4 py-3 border border-[#E4E7EC] rounded-lg focus:outline-none focus:border-[#0EA5A4] transition resize-none"
+                    className="w-full px-4 py-3 border border-[#E4E7EC] rounded-lg focus:outline-none focus:border-cyan-600 transition resize-none"
                     required
                   ></textarea>
                 </div>
@@ -170,7 +180,7 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#0EA5A4] hover:bg-[#0B8E8D] text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Sending..." : "Send Message"}
                 </button>
@@ -193,14 +203,14 @@ export default function ContactPage() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="bg-[#F8FAFC] border border-[#E4E7EC] rounded-xl p-6 flex items-start gap-4"
               >
-                <div className="w-12 h-12 rounded-lg bg-[#ECFDFD] flex items-center justify-center flex-shrink-0">
-                  <MdEmail className="text-[#0EA5A4]" size={24} />
+                <div className="w-12 h-12 rounded-lg bg-cyan-50 flex items-center justify-center flex-shrink-0">
+                  <MdEmail className="text-cyan-600" size={24} />
                 </div>
                 <div>
                   <p className="font-semibold text-[#0F172A] mb-1">Email</p>
                   <a
                     href="mailto:stephenajao97@gmail.com"
-                    className="text-[#667085] hover:text-[#0EA5A4] transition"
+                    className="text-[#667085] hover:text-cyan-600 transition"
                   >
                     stephenajao97@gmail.com
                   </a>
@@ -215,8 +225,8 @@ export default function ContactPage() {
                 transition={{ duration: 0.6, delay: 0.25 }}
                 className="bg-[#F8FAFC] border border-[#E4E7EC] rounded-xl p-6 flex items-start gap-4"
               >
-                <div className="w-12 h-12 rounded-lg bg-[#ECFDFD] flex items-center justify-center flex-shrink-0">
-                  <MdWhatsapp className="text-[#0EA5A4]" size={24} />
+                <div className="w-12 h-12 rounded-lg bg-cyan-50 flex items-center justify-center flex-shrink-0">
+                  <MdWhatsapp className="text-cyan-600" size={24} />
                 </div>
                 <div>
                   <p className="font-semibold text-[#0F172A] mb-1">WhatsApp</p>
@@ -224,7 +234,7 @@ export default function ContactPage() {
                     href="https://wa.me/2348148853284"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#667085] hover:text-[#0EA5A4] transition"
+                    className="text-[#667085] hover:text-cyan-600 transition"
                   >
                     +234 814 885 3284
                   </a>
@@ -239,8 +249,8 @@ export default function ContactPage() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="bg-[#F8FAFC] border border-[#E4E7EC] rounded-xl p-6 flex items-start gap-4"
               >
-                <div className="w-12 h-12 rounded-lg bg-[#ECFDFD] flex items-center justify-center flex-shrink-0">
-                  <FaPhone className="text-[#0EA5A4]" size={20} />
+                <div className="w-12 h-12 rounded-lg bg-cyan-50 flex items-center justify-center flex-shrink-0">
+                  <FaPhone className="text-cyan-600" size={20} />
                 </div>
                 <div>
                   <p className="font-semibold text-[#0F172A] mb-1">Phone</p>
@@ -256,7 +266,7 @@ export default function ContactPage() {
                     href="https://www.linkedin.com/in/stephen-ajao-413423194/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-lg bg-[#ECFDFD] flex items-center justify-center hover:bg-[#0EA5A4] hover:text-white transition"
+                    className="w-12 h-12 rounded-lg bg-cyan-50 flex items-center justify-center hover:bg-cyan-600 hover:text-white transition"
                     title="LinkedIn"
                   >
                     <FaLinkedin size={20} />
@@ -265,7 +275,7 @@ export default function ContactPage() {
                     href="https://github.com/stefanu-aj"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-lg bg-[#ECFDFD] flex items-center justify-center hover:bg-[#0EA5A4] hover:text-white transition"
+                    className="w-12 h-12 rounded-lg bg-cyan-50 flex items-center justify-center hover:bg-cyan-600 hover:text-white transition"
                     title="GitHub"
                   >
                     <FaGithub size={20} />
@@ -274,7 +284,7 @@ export default function ContactPage() {
                     href="https://x.com/stefanu_ajao"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-lg bg-[#ECFDFD] flex items-center justify-center hover:bg-[#0EA5A4] hover:text-white transition"
+                    className="w-12 h-12 rounded-lg bg-cyan-50 flex items-center justify-center hover:bg-cyan-600 hover:text-white transition"
                     title="X"
                   >
                     <FaTwitter size={20} />
@@ -283,7 +293,7 @@ export default function ContactPage() {
                     href="https://instagram.com/stefanu_ajao/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-lg bg-[#ECFDFD] flex items-center justify-center hover:bg-[#0EA5A4] hover:text-white transition"
+                    className="w-12 h-12 rounded-lg bg-cyan-50 flex items-center justify-center hover:bg-cyan-600 hover:text-white transition"
                     title="Instagram"
                   >
                     <FaInstagram size={20} />
@@ -292,7 +302,7 @@ export default function ContactPage() {
                     href="https://facebook.com/ajaostefanu/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-lg bg-[#ECFDFD] flex items-center justify-center hover:bg-[#0EA5A4] hover:text-white transition"
+                    className="w-12 h-12 rounded-lg bg-cyan-50 flex items-center justify-center hover:bg-cyan-600 hover:text-white transition"
                     title="Facebook"
                   >
                     <FaFacebook size={20} />
@@ -314,7 +324,7 @@ export default function ContactPage() {
           >
             <p className="text-[#667085]">
               ⚡ I typically respond within{" "}
-              <span className="font-semibold text-[#0EA5A4]">24 hours</span>
+              <span className="font-semibold text-cyan-600">24 hours</span>
             </p>
           </motion.div>
         </SlideIn>
