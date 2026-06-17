@@ -22,7 +22,12 @@ export default function Portfolio() {
     {
       title: "Weather App",
       link: "https://weather-app-stefanu.vercel.app/",
-      image: "\\Images\\Weather app.png",
+      image: "/Images/Weather app.png",
+    },
+    {
+      title: "VSESC Site",
+      link: "https://polyibadanvsesc.vercel.app/",
+      image: "/Images/VSESC.png",
     },
   ];
 
